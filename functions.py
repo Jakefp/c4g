@@ -101,7 +101,10 @@ def create_radar_chart_class_racing(data):
             athlete_row[categories[1]].values[0],
             athlete_row[categories[2]].values[0],
             athlete_row[categories[3]].values[0],
-            athlete_row[categories[4]].values[0]
+            athlete_row[categories[4]].values[0],
+            athlete_row[categories[5]].values[0],
+            athlete_row[categories[6]].values[0],
+            athlete_row[categories[7]].values[0]
         ]
         
         # Ensure the radar chart is circular by repeating the first value
@@ -153,7 +156,8 @@ def create_radar_chart_class_behaviour(data):
             athlete_row[categories[1]].values[0],
             athlete_row[categories[2]].values[0],
             athlete_row[categories[3]].values[0],
-            athlete_row[categories[4]].values[0]
+            athlete_row[categories[4]].values[0],
+            athlete_row[categories[5]].values[0]
         ]
         
         # Ensure the radar chart is circular by repeating the first value
@@ -249,6 +253,7 @@ def create_bar_chart_class_fitness(data):
 
     st.plotly_chart(fig)
 
+### Combining heights to a height matrix
 def combined_heights(data):
     names = data['Name']
     heights = data['Height'].values
@@ -257,10 +262,117 @@ def combined_heights(data):
     # Convert to DataFrame for Plotly compatibility
     height_sum_df = pd.DataFrame(height_matrix, index=names, columns=names)
 
-    # Create the heatmap
-    fig = px.imshow(height_sum_df, labels=dict(x="Athlete", y="Athlete", color="Height Sum"),
-                    x=names, y=names, aspect="auto")
-    
-    fig.update_layout(title="Combined Crew Heights")
+    # Create a mask for the diagonal cells (same athlete)
+    mask_df = pd.DataFrame(0, index=names, columns=names)
+    for i in range(len(names)):
+        mask_df.iloc[i, i] = 1  # Set the diagonal cells to 1 to indicate same athlete
+
+
+    # Create the heatmap using Plotly Graph Objects for annotation support
+    fig = go.Figure(data=go.Heatmap(
+        z=height_sum_df.round(0).values,  # Round values to 0 decimal places
+        x=names,
+        y=names,
+        colorscale=['red', 'white', 'green'],
+        colorbar_title="Height Sum",
+        text=height_sum_df.round(0).astype(int).values,  # Round values for text
+        hoverinfo="z"
+    ))
+
+    # Add a layer to grey out the diagonal cells
+    for i in range(len(names)):
+        fig.add_shape(
+            type="rect",
+            x0=i - 0.5, x1=i + 0.5,
+            y0=i - 0.5, y1=i + 0.5,
+            fillcolor="grey",
+            opacity=0.6,
+            line=dict(width=0)
+        )
+
+    # Add annotations with rounded numbers
+    for i in range(len(names)):
+        for j in range(len(names)):
+            if i != j:  # Only add annotations for non-diagonal cells
+                fig.add_annotation(
+                    text=str(int(height_sum_df.iloc[i, j])),
+                    x=names[j],
+                    y=names[i],
+                    showarrow=False,
+                    font=dict(color="black")
+                )
+
+    fig.update_layout(
+        title="Combined Crew Heights",
+        xaxis_title="Athlete",
+        yaxis_title="Athlete",
+        xaxis=dict(tickmode="array", tickvals=names),
+        yaxis=dict(tickmode="array", tickvals=names),
+    )
+
+    # Display the heatmap in Streamlit
+    st.plotly_chart(fig)
+
+def team_lever_matrix(data):
+    names = data['Name']
+    moments = data['Moment'].values/100
+    body_weights = data['Body Weight'].values
+
+    # Calculate the team lever matrix using the provided formula
+    lever_matrix = 1.45 + (moments[:, None] + moments) / (body_weights[:, None] + body_weights)
+
+    # Convert to DataFrame for Plotly compatibility
+    lever_df = pd.DataFrame(lever_matrix, index=names, columns=names)
+
+    # Create a mask for the diagonal cells (same athlete)
+    mask_df = pd.DataFrame(0, index=names, columns=names)
+    for i in range(len(names)):
+        mask_df.iloc[i, i] = 1  # Set the diagonal cells to 1 to indicate same athlete
+
+    # Create the heatmap using Plotly Graph Objects for annotation support
+    fig = go.Figure()
+
+    # Main heatmap layer with the custom color scale
+    fig.add_trace(go.Heatmap(
+        z=lever_df.round(2).values,  # Rounded to 2 decimal places for display
+        x=names,
+        y=names,
+        colorscale=['red', 'white', 'green'],
+        colorbar_title="Team Lever Value",
+        text=lever_df.round(2).astype(float).values,
+        hoverinfo="z"
+    ))
+
+    # Add a layer to grey out the diagonal cells
+    for i in range(len(names)):
+        fig.add_shape(
+            type="rect",
+            x0=i - 0.5, x1=i + 0.5,
+            y0=i - 0.5, y1=i + 0.5,
+            fillcolor="grey",
+            opacity=0.6,
+            line=dict(width=0)
+        )
+
+    # Add annotations with rounded numbers
+    for i in range(len(names)):
+        for j in range(len(names)):
+            if i != j:  # Only add annotations for non-diagonal cells
+                fig.add_annotation(
+                    text=f"{lever_df.iloc[i, j]:.2f}",  # Format to 2 decimal places
+                    x=names[j],
+                    y=names[i],
+                    showarrow=False,
+                    font=dict(color="black")
+                )
+
+    fig.update_layout(
+        title="Team Lever Matrix",
+        xaxis_title="Athlete",
+        yaxis_title="Athlete",
+        xaxis=dict(tickmode="array", tickvals=names),
+        yaxis=dict(tickmode="array", tickvals=names),
+    )
+
     # Display the heatmap in Streamlit
     st.plotly_chart(fig)

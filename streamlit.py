@@ -60,6 +60,7 @@ with col1:
     combined_heights(data)
 with col2:
     st.write('### Combined Moment')
+    team_lever_matrix(data)
 
 st.divider()
 
@@ -84,7 +85,3 @@ else:
 
 
 st.write("Data visuals: Jake Farren-Price")
-
-# pw: LA2028!
-
-#Notes: Performance number and Potential 
