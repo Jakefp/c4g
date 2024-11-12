@@ -5,6 +5,7 @@ import numpy
 import random
 import pandas as pd
 import plotly.express as px
+import os
 
 ### First Character
 
@@ -314,8 +315,9 @@ def combined_heights(data):
     st.plotly_chart(fig)
 
 def team_lever_matrix(data):
+
     names = data['Name']
-    moments = data['Moment'].values/100
+    moments = data['Moment'].values
     body_weights = data['Body Weight'].values
 
     # Calculate the team lever matrix using the provided formula
@@ -376,3 +378,52 @@ def team_lever_matrix(data):
 
     # Display the heatmap in Streamlit
     st.plotly_chart(fig)
+
+def specific_athlete(data, selected_athlete):
+    # Filter the data for the selected athlete
+    athlete_data = data[data["Name"] == selected_athlete]
+
+    if athlete_data.empty:
+        st.warning("Athlete not found in the data.")
+        return
+
+    # Path to the athlete's image
+    image_path = f"athlete_profiles/{selected_athlete}.jpg"
+
+    # Create two columns for layout
+    col1, col2 = st.columns(2)
+
+    # Display image if it exists
+    with col1:
+        if os.path.exists(image_path):
+            st.image(image_path, caption=f"{selected_athlete}'s Profile Image")
+        else:
+            st.subheader("No image available for this athlete")
+    
+    # Display DOB information
+    with col2:
+        dob = athlete_data["DOB"].values[0] # Extract the DOB value
+        Partner = athlete_data["Partner"].values[0]
+        Boat = athlete_data["Boat"].values[0]
+        Trainability_score = athlete_data["Trainability Score"].values[0]
+        Fitness_rank = athlete_data["Fitness Rank"].values[0]
+        Potential_score = athlete_data["Potential Score"].values[0]
+        Potential_rank = athlete_data["Potential Rank"].values[0]
+        Behaviour_score = athlete_data["Behaviour Score"].values[0]
+        Behaviour_rank = athlete_data["Behaviour Rank"].values[0]
+
+        st.write(f"DOB: {dob}"),
+        st.write(f"Current Crew: {Partner}"),
+        st.write(f"Boat Ownership: {Boat}"),
+        st.write(f"Trainability: {Trainability_score}"),
+        st.write(f"Fitness Rank: {Fitness_rank}"),
+        st.write(f"Potential Score: {Potential_score}")
+        st.write(f"Potential Rank: {Potential_rank}")
+        st.write(f"Behaviour Score: {Behaviour_score}")
+        st.write(f"Behaviour Rank: {Behaviour_rank}")
+
+    # Who sails with
+    # Boat Owner
+    # Rankings
+    # Profile Pic
+    # Fitness Matrix

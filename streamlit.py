@@ -37,7 +37,7 @@ st.set_page_config(layout="wide")
 st.image("bst_img.png", width=300)
 st.title('Crew 4 Gold 2024 Selections')
 
-st.write("Here you can analyse the performance and potential of the Crew 4 Gold athletes.")
+st.write("Here you can analyse the performance and potential of the Crew 4 Gold athletes. All graphs are interactive and can go full screen if you are having difficulty with formatting.")
 
 data = pd.read_excel('master_c4g_24.xlsx', engine='openpyxl', sheet_name='overall')
 
@@ -66,15 +66,11 @@ st.divider()
 
 st.write(f'## Specific Athlete Deep Dive' )
 selected_athlete = st.selectbox("Select Athlete", data["Name"])
+
+specific_athlete(data, selected_athlete)
 # st.header("Athlete profiles currently being generated")
 
 
-image_path = (f"athlete_profiles/{selected_athlete}.jpg")
-
-if os.path.exists(image_path):
-    st.image(image_path)
-else:
-    st.subheader("No image for this athlete")
 
 
 # st.image(f"{selected_class}/{selected_athlete}.png")
