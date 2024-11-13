@@ -193,7 +193,7 @@ def create_bar_chart_class_fitness(data):
     data = data.sort_values(by='Trainability Score', ascending=True)
 
     athlete_names = data['Name']
-    cmj = data['CMJ']
+    # cmj = data['CMJ']
     leg_press = data['Leg Press']
     bench_pull = data['Bench Pull']
     watt_bike = data['4min Watt Bike']
@@ -212,13 +212,13 @@ def create_bar_chart_class_fitness(data):
     ))
 
     # Add the second set of bars for the 6 Month Result
-    fig.add_trace(go.Bar(
-        y=athlete_names,  # Y-axis will be the athlete names
-        x=cmj,  # X-axis will be the six-month result
-        name='CMJ',
-        orientation='h',  # Horizontal bars
-        marker=dict(color='light blue')  # Color for the bars
-    ))
+    # fig.add_trace(go.Bar(
+    #     y=athlete_names,  # Y-axis will be the athlete names
+    #     x=cmj,  # X-axis will be the six-month result
+    #     name='CMJ',
+    #     orientation='h',  # Horizontal bars
+    #     marker=dict(color='light blue')  # Color for the bars
+    # ))
     fig.add_trace(go.Bar(
         y=athlete_names,  # Y-axis will be the athlete names
         x=leg_press,  # X-axis will be the six-month result
@@ -388,7 +388,7 @@ def specific_athlete(data, selected_athlete):
         return
 
     # Path to the athlete's image
-    image_path = f"athlete_profiles/{selected_athlete}.jpg"
+    image_path = f"athlete_profiles/{selected_athlete}.png"
 
     # Create two columns for layout
     col1, col2 = st.columns(2)
@@ -422,8 +422,3 @@ def specific_athlete(data, selected_athlete):
         st.write(f"Behaviour Score: {Behaviour_score}")
         st.write(f"Behaviour Rank: {Behaviour_rank}")
 
-    # Who sails with
-    # Boat Owner
-    # Rankings
-    # Profile Pic
-    # Fitness Matrix
