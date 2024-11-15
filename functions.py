@@ -256,6 +256,7 @@ def create_bar_chart_class_fitness(data):
 
 ### Combining heights to a height matrix
 def combined_heights(data):
+
     names = data['Name']
     heights = data['Height'].values
     height_matrix = heights[:, None] + heights  # Adds each height to every other height
@@ -309,6 +310,57 @@ def combined_heights(data):
         yaxis_title="Athlete",
         xaxis=dict(tickmode="array", tickvals=names),
         yaxis=dict(tickmode="array", tickvals=names),
+    )
+
+    # Display the heatmap in Streamlit
+    st.plotly_chart(fig)
+
+def combined_heights_matrix_2(data):
+
+    # Separate helms and crews based on "Helm/Crew" column
+    helms = data[data['Helm/Crew'] == 'Helm']
+    crews = data[data['Helm/Crew'] == 'Crew']
+    
+    helm_names = helms['Name'].values
+    crew_names = crews['Name'].values
+    
+    helm_heights = helms['Height'].values
+    crew_heights = crews['Height'].values
+
+    # Create a height matrix by adding each helm height to each crew height
+    height_matrix = helm_heights[:, None] + crew_heights  # Outer addition
+    
+    # Convert to DataFrame for Plotly compatibility
+    height_sum_df = pd.DataFrame(height_matrix, index=helm_names, columns=crew_names)
+
+    # Create the heatmap using Plotly Graph Objects
+    fig = go.Figure(data=go.Heatmap(
+        z=height_sum_df.round(0).values,  # Round values to 0 decimal places
+        x=crew_names,
+        y=helm_names,
+        colorscale=['red', 'white', 'green'],
+        colorbar_title="Height Sum",
+        text=height_sum_df.round(0).astype(int).values,  # Round values for text
+        hoverinfo="z"
+    ))
+
+    # Add annotations with rounded numbers
+    for i, helm in enumerate(helm_names):
+        for j, crew in enumerate(crew_names):
+            fig.add_annotation(
+                text=str(int(height_sum_df.iloc[i, j])),
+                x=crew,
+                y=helm,
+                showarrow=False,
+                font=dict(color="black")
+            )
+
+    fig.update_layout(
+        title="Combined Crew Heights",
+        xaxis_title="Crews",
+        yaxis_title="Helms",
+        xaxis=dict(tickmode="array", tickvals=crew_names),
+        yaxis=dict(tickmode="array", tickvals=helm_names),
     )
 
     # Display the heatmap in Streamlit
@@ -379,6 +431,62 @@ def team_lever_matrix(data):
     # Display the heatmap in Streamlit
     st.plotly_chart(fig)
 
+def team_lever_matrix_2(data):
+    # Separate helms and crews based on "Helm/Crew" column
+    helms = data[data['Helm/Crew'] == 'Helm']
+    crews = data[data['Helm/Crew'] == 'Crew']
+    
+    helm_names = helms['Name'].values
+    crew_names = crews['Name'].values
+    
+    helm_moments = helms['Moment'].values
+    crew_moments = crews['Moment'].values
+    
+    helm_weights = helms['Body Weight'].values
+    crew_weights = crews['Body Weight'].values
+
+    # Calculate the team lever matrix using the provided formula
+    lever_matrix = 1.45 + (helm_moments[:, None] + crew_moments) / (helm_weights[:, None] + crew_weights)
+
+    # Convert to DataFrame for Plotly compatibility
+    lever_df = pd.DataFrame(lever_matrix, index=helm_names, columns=crew_names)
+
+    # Create the heatmap using Plotly Graph Objects
+    fig = go.Figure()
+
+    # Main heatmap layer with the custom color scale
+    fig.add_trace(go.Heatmap(
+        z=lever_df.round(2).values,  # Rounded to 2 decimal places for display
+        x=crew_names,
+        y=helm_names,
+        colorscale=['red', 'white', 'green'],
+        colorbar_title="Team Lever Value",
+        text=lever_df.round(2).astype(float).values,
+        hoverinfo="z"
+    ))
+
+    # Add annotations with rounded numbers
+    for i, helm in enumerate(helm_names):
+        for j, crew in enumerate(crew_names):
+            fig.add_annotation(
+                text=f"{lever_df.iloc[i, j]:.2f}",  # Format to 2 decimal places
+                x=crew,
+                y=helm,
+                showarrow=False,
+                font=dict(color="black")
+            )
+
+    fig.update_layout(
+        title="Team Lever Matrix",
+        xaxis_title="Crews",
+        yaxis_title="Helms",
+        xaxis=dict(tickmode="array", tickvals=crew_names),
+        yaxis=dict(tickmode="array", tickvals=helm_names),
+    )
+
+    # Display the heatmap in Streamlit
+    st.plotly_chart(fig)
+
 def specific_athlete(data, selected_athlete):
     # Filter the data for the selected athlete
     athlete_data = data[data["Name"] == selected_athlete]
@@ -403,16 +511,19 @@ def specific_athlete(data, selected_athlete):
     # Display DOB information
     with col2:
         dob = athlete_data["DOB"].values[0] # Extract the DOB value
+        age = athlete_data["AGE"].values[0]
         Partner = athlete_data["Partner"].values[0]
         Boat = athlete_data["Boat"].values[0]
         Trainability_score = athlete_data["Trainability Score"].values[0]
         Fitness_rank = athlete_data["Fitness Rank"].values[0]
-        Potential_score = athlete_data["Potential Score"].values[0]
+        Potential_score = round(athlete_data["Potential Score"].values[0],2)
         Potential_rank = athlete_data["Potential Rank"].values[0]
-        Behaviour_score = athlete_data["Behaviour Score"].values[0]
+        Behaviour_score = round(athlete_data["Behaviour Score"].values[0],2)
         Behaviour_rank = athlete_data["Behaviour Rank"].values[0]
+        comment = athlete_data["Comment"].values[0]
 
         st.write(f"DOB: {dob}"),
+        st.write(f"AGE: {age}"),
         st.write(f"Current Crew: {Partner}"),
         st.write(f"Boat Ownership: {Boat}"),
         st.write(f"Trainability: {Trainability_score}"),
@@ -421,4 +532,5 @@ def specific_athlete(data, selected_athlete):
         st.write(f"Potential Rank: {Potential_rank}")
         st.write(f"Behaviour Score: {Behaviour_score}")
         st.write(f"Behaviour Rank: {Behaviour_rank}")
+        st.write(f"Coaches Comment (Summarised by AI): {comment}")
 

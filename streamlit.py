@@ -52,15 +52,12 @@ create_bar_chart_class_fitness(data)
 
 st.divider()
 
-st.write('## Combinations')
-col1, col2 = st.columns(2)
 
-with col1:
-    st.write('### Combined heights')
-    combined_heights(data)
-with col2:
-    st.write('### Combined Moment')
-    team_lever_matrix(data)
+st.write('### Combined heights')
+combined_heights_matrix_2(data)
+
+st.write('### Combined Team Lever')
+team_lever_matrix_2(data)
 
 st.divider()
 
