@@ -113,4 +113,8 @@ specific_athlete(data, selected_athlete)
 # st.image(f"{selected_class}/{selected_athlete}BR.png")
 
 
+st.write('## Raw Coach Score Averages')
+
+st.image('Raw_coach_scores.png')
+
 st.write("Data visuals: Jake Farren-Price")
