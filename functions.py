@@ -190,7 +190,12 @@ def create_radar_chart_class_behaviour(data):
 ### Bar Chart Performance for Class
 def create_bar_chart_class_fitness(data):
 
-    data = data.sort_values(by='Trainability Score', ascending=True)
+    data = data.sort_values(by=['Helm/Crew', 'Trainability Score'], ascending=[True, False])
+
+    names_to_remove = ['Eve Kennedy (Helm)', 'Bella Fellows']
+
+    # Filter out rows where the 'Name' column matches any name in the list
+    data = data[~data['Name'].isin(names_to_remove)]
 
     athlete_names = data['Name']
     # cmj = data['CMJ']
@@ -257,6 +262,11 @@ def create_bar_chart_class_fitness(data):
 ### Combining heights to a height matrix
 def combined_heights(data):
 
+    names_to_remove = ['Eve Kennedy (Helm)', 'Bella Fellows']
+
+    # Filter out rows where the 'Name' column matches any name in the list
+    data = data[~data['Name'].isin(names_to_remove)]
+
     names = data['Name']
     heights = data['Height'].values
     height_matrix = heights[:, None] + heights  # Adds each height to every other height
@@ -316,6 +326,11 @@ def combined_heights(data):
     st.plotly_chart(fig)
 
 def combined_heights_matrix_2(data):
+
+    names_to_remove = ['Eve Kennedy (Helm)', 'Bella Fellows']
+
+    # Filter out rows where the 'Name' column matches any name in the list
+    data = data[~data['Name'].isin(names_to_remove)]
 
     # Separate helms and crews based on "Helm/Crew" column
     helms = data[data['Helm/Crew'] == 'Helm']
@@ -432,6 +447,12 @@ def team_lever_matrix(data):
     st.plotly_chart(fig)
 
 def team_lever_matrix_2(data):
+
+    names_to_remove = ['Eve Kennedy (Helm)', 'Bella Fellows']
+
+    # Filter out rows where the 'Name' column matches any name in the list
+    data = data[~data['Name'].isin(names_to_remove)]
+
     # Separate helms and crews based on "Helm/Crew" column
     helms = data[data['Helm/Crew'] == 'Helm']
     crews = data[data['Helm/Crew'] == 'Crew']
@@ -511,13 +532,13 @@ def specific_athlete(data, selected_athlete):
     # Display DOB information
     with col2:
         dob = athlete_data["DOB"].values[0] # Extract the DOB value
-        age = athlete_data["AGE"].values[0]
+        age = athlete_data["Age"].values[0]
         Partner = athlete_data["Partner"].values[0]
         Boat = athlete_data["Boat"].values[0]
         Trainability_score = athlete_data["Trainability Score"].values[0]
         Fitness_rank = athlete_data["Fitness Rank"].values[0]
-        Potential_score = round(athlete_data["Potential Score"].values[0],2)
-        Potential_rank = athlete_data["Potential Rank"].values[0]
+        Racing_score = round(athlete_data["Racing Score"].values[0],2)
+        Racing_rank = athlete_data["Racing Rank"].values[0]
         Behaviour_score = round(athlete_data["Behaviour Score"].values[0],2)
         Behaviour_rank = athlete_data["Behaviour Rank"].values[0]
         comment = athlete_data["Comment"].values[0]
@@ -528,8 +549,8 @@ def specific_athlete(data, selected_athlete):
         st.write(f"Boat Ownership: {Boat}"),
         st.write(f"Trainability: {Trainability_score}"),
         st.write(f"Fitness Rank: {Fitness_rank}"),
-        st.write(f"Potential Score: {Potential_score}")
-        st.write(f"Potential Rank: {Potential_rank}")
+        st.write(f"Racing Score: {Racing_score}")
+        st.write(f"Racing Rank: {Racing_rank}")
         st.write(f"Behaviour Score: {Behaviour_score}")
         st.write(f"Behaviour Rank: {Behaviour_rank}")
         st.write(f"Coaches Comment (Summarised by AI): {comment}")

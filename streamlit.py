@@ -41,19 +41,55 @@ st.write("Here you can analyse the performance and potential of the Crew 4 Gold 
 
 data = pd.read_excel('master_c4g_24.xlsx', engine='openpyxl', sheet_name='overall')
 
+st.write('### Key:')
+st.write('1 - Lacking')
+st.write('2 - Theory')
+st.write('3 - Practising')
+st.write('4 - Confident')
+st.write('5 - Strong')
+
+st.write('NOTE: Karrie Clarke has not been reviewed by Walshy - this may skew the averages slightly.')
+st.write('NOTE: Eve Kennedy has been left out of Fitness information, Monique has data from a previous Testing.')
+
 st.write('## Racing Skills')
-create_radar_chart_class_racing(data)
+col1, col2 = st.columns(2)
+
+with col1:
+    create_radar_chart_class_racing(data)
+with col2:
+    racing_cols = ['Name', 'Racing Rank', 'Racing Score', 'Racing Knowledge',  'Driving the boat', 'Startline Skills', 'Prepare the boat for sailing', 'Tack quickly and smoothly', 'Non-dependent learner', 'Bearing away and hoisting', 'Gybe quickly and smoothly', 'Dropping and rounding the bottom mark']
+    filtered_data = data[racing_cols]
+    sorted_data = filtered_data.sort_values(by='Racing Rank')
+    st.dataframe(sorted_data,hide_index=True)
 
 st.write('## Behaviour')
-create_radar_chart_class_behaviour(data)
+col1, col2 = st.columns(2)
+
+with col1:
+    create_radar_chart_class_behaviour(data)
+with col2:
+    behaviour_cols = ['Name','Behaviour Rank',  'Behaviour Score', 'Decision making under pressure', 'Performing under pressure', 'Will to stretch and challenge themselves', 'Non-dependent learner', 'Commitment and consistency shown', 'Preparing and reviewing training']
+    filtered_data = data[behaviour_cols]
+    sorted_data = filtered_data.sort_values(by='Behaviour Rank')
+    st.dataframe(sorted_data,hide_index=True)
 
 st.write('## Fitness')
-create_bar_chart_class_fitness(data)
+col1, col2 = st.columns(2)
+
+with col1:
+    create_bar_chart_class_fitness(data)
+with col2:
+    fitness_cols = ['Name', 'Age', 'Trainability Score', 'Leg Press', 'Bench Pull', '4min Watt Bike', 'Body Weight', 'Height']
+    filtered_data = data[fitness_cols]
+    sorted_data = filtered_data.sort_values(by='Trainability Score', ascending=False)
+    st.dataframe(sorted_data,hide_index=True)
+
+
 
 st.divider()
 
 
-st.write('### Combined heights')
+st.write('### Combined Heights')
 combined_heights_matrix_2(data)
 
 st.write('### Combined Team Lever')
